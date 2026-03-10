@@ -79,7 +79,7 @@ const Settings = () => {
         if (activeTab === 'whatsapp' && whatsappStatus !== 'connected') {
             const fetchStatus = async () => {
                 try {
-                    const res = await axios.get('https://billing-software-backend-production-0456.up.railway.app/api/business/whatsapp-status', {
+                    const res = await axios.get('http://16.171.253.179:5000/api/business/whatsapp-status', {
                         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     });
                     setWhatsappStatus(res.data.status);
@@ -89,7 +89,7 @@ const Settings = () => {
                 }
             };
             fetchStatus();
-            interval = setInterval(fetchStatus, 30000); // poll every 30s
+            interval = setInterval(fetchStatus, 30000);
         }
         return () => clearInterval(interval);
     }, [activeTab, whatsappStatus]);
@@ -138,7 +138,7 @@ const Settings = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await axios.put('https://billing-software-backend-production-0456.up.railway.app/api/business', formData);
+            const res = await axios.put('http://16.171.253.179:5000/api/business', formData);
             setBusiness(res.data);
             toast.success('Business settings updated successfully!');
         } catch (err) {
@@ -265,3 +265,143 @@ const Settings = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700">UPI ID for Payment QR</label>
+                                    <input type="text" name="upiId" value={formData.upiId} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" placeholder="yourbusiness@upi" />
+                                    <p className="mt-1 text-xs text-gray-500">A QR code for this UPI ID will be generated on invoices.</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Account Name</label>
+                                    <input type="text" name="bank.accountName" value={formData.bankDetails.accountName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Account Number</label>
+                                    <input type="text" name="bank.accountNumber" value={formData.bankDetails.accountNumber} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">IFSC Code</label>
+                                    <input type="text" name="bank.ifscCode" value={formData.bankDetails.ifscCode} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 uppercase focus:ring-primary focus:border-primary sm:text-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Bank Name</label>
+                                    <input type="text" name="bank.bankName" value={formData.bankDetails.bankName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'social' && (
+                        <div className="space-y-6 animate-fade-in">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Instagram Handle / URL</label>
+                                    <input type="text" name="social.instagram" value={formData.socialLinks.instagram} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" placeholder="@yourbusiness" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Facebook Page URL</label>
+                                    <input type="text" name="social.facebook" value={formData.socialLinks.facebook} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" placeholder="facebook.com/yourbusiness" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Twitter (X) Profile</label>
+                                    <input type="text" name="social.twitter" value={formData.socialLinks.twitter} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" placeholder="@yourhandle" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Business Website</label>
+                                    <input type="url" name="social.website" value={formData.socialLinks.website} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-primary focus:border-primary sm:text-sm" placeholder="https://www.yourdomain.com" />
+                                </div>
+                                <div className="md:col-span-2 mt-2">
+                                    <p className="text-sm text-gray-500 bg-blue-50 p-3 rounded-lg border border-blue-100 flex items-start">
+                                        <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        These links will be elegantly attached to your automated WhatsApp messages to help grow your online presence.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'whatsapp' && (
+                        <div className="space-y-6 animate-fade-in">
+                            <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-xl flex flex-col items-center justify-center text-center">
+                                <FiSmartphone className="text-emerald-500 w-12 h-12 mb-4" />
+                                <h3 className="text-lg font-bold text-emerald-900 mb-2">Automated WhatsApp Invoices</h3>
+                                <p className="text-sm text-emerald-700 max-w-md mb-6">
+                                    Link your WhatsApp account to automatically send PDF invoices to your customers when a new bill is created.
+                                </p>
+                                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center min-w-[280px]">
+                                    {whatsappStatus === 'connected' ? (
+                                        <div className="text-center space-y-3">
+                                            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                            <h4 className="font-bold text-gray-900">Successfully Connected!</h4>
+                                            <p className="text-sm text-gray-500">Your bot is active and ready to send invoices.</p>
+                                        </div>
+                                    ) : whatsappStatus === 'qr_ready' && whatsappQR ? (
+                                        <div className="text-center">
+                                            <h4 className="font-bold text-gray-800 mb-4">Scan QR to Link Device</h4>
+                                            <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-100 mb-4 inline-block">
+                                                <QRCodeSVG value={whatsappQR} size={200} />
+                                            </div>
+                                            <ol className="text-xs text-left text-gray-600 space-y-2 list-decimal list-inside max-w-xs mx-auto">
+                                                <li>Open WhatsApp on your phone</li>
+                                                <li>Tap Menu (<span className="font-bold px-1">⋮</span>) or Settings</li>
+                                                <li>Select <span className="font-bold">Linked Devices</span></li>
+                                                <li>Tap <span className="font-bold">Link a Device</span> and scan the code</li>
+                                            </ol>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center space-y-4 py-8">
+                                            <FiRefreshCw className="w-8 h-8 text-primary animate-spin mx-auto" />
+                                            <p className="text-sm text-gray-500 font-medium">Initializing WhatsApp Bot...</p>
+                                            <p className="text-xs text-gray-400">This may take up to a minute when starting the server.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'users' && (
+                        <div className="space-y-6 animate-fade-in">
+                            <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                <div>
+                                    <h4 className="font-bold text-blue-900">Multi User Management</h4>
+                                    <p className="text-sm text-blue-800">Available on PRO Plan</p>
+                                </div>
+                                <button type="button" className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600">
+                                    Upgrade to PRO
+                                </button>
+                            </div>
+                            <div className="mt-4">
+                                <h4 className="font-medium text-gray-800 mb-3">Current Users</h4>
+                                <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+                                    <div className="p-4 flex items-center justify-between">
+                                        <div>
+                                            <p className="font-medium text-gray-900">{user?.name}</p>
+                                            <p className="text-sm text-gray-500">{user?.email}</p>
+                                        </div>
+                                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-md capitalize">
+                                            {user?.role || 'Admin'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={loading || activeTab === 'users'}
+                            className="bg-primary hover:bg-blue-600 disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition flex items-center shadow-sm"
+                        >
+                            <FiSave className="mr-2" />
+                            {loading ? 'Saving...' : 'Save Changes'}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default Settings;
