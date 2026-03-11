@@ -3,12 +3,13 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiSearch, FiPhone, FiMail } from 'react-icons/fi';
 
+const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+
 const Customers = () => {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const Customers = () => {
 
     const fetchCustomers = async () => {
         try {
-            const res = await axios.get('https://billing-software-backend-production-0456.up.railway.app/api/customers');
+            const res = await axios.get(`${API}/api/customers`);
             setCustomers(res.data);
         } catch (err) {
             toast.error('Failed to load customers');
@@ -36,7 +37,6 @@ const Customers = () => {
         fetchCustomers();
     }, []);
 
-    // ✅ FIX: Body scroll lock jab modal open ho
     useEffect(() => {
         if (isModalOpen) {
             document.body.style.overflow = 'hidden';
@@ -75,7 +75,6 @@ const Customers = () => {
     };
 
     const handleChange = (e) => {
-        // ✅ FIX: Empty string handle karo number fields mein
         const value = e.target.type === 'number'
             ? (e.target.value === '' ? '' : Number(e.target.value))
             : e.target.value;
@@ -86,10 +85,10 @@ const Customers = () => {
         e.preventDefault();
         try {
             if (editingId) {
-                await axios.put(`https://billing-software-backend-production-0456.up.railway.app/api/customers/${editingId}`, formData);
+                await axios.put(`${API}/api/customers/${editingId}`, formData);
                 toast.success('Customer updated successfully');
             } else {
-                await axios.post('https://billing-software-backend-production-0456.up.railway.app/api/customers', formData);
+                await axios.post(`${API}/api/customers`, formData);
                 toast.success('Customer added successfully');
             }
             handleCloseModal();
@@ -102,7 +101,7 @@ const Customers = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this customer?')) {
             try {
-                await axios.delete(`https://billing-software-backend-production-0456.up.railway.app/api/customers/${id}`);
+                await axios.delete(`${API}/api/customers/${id}`);
                 toast.success('Customer deleted');
                 fetchCustomers();
             } catch (err) {
@@ -118,7 +117,6 @@ const Customers = () => {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 className="text-2xl font-bold text-gray-800">Customers</h2>
                 <button
@@ -129,7 +127,6 @@ const Customers = () => {
                 </button>
             </div>
 
-            {/* Filters */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center">
                 <div className="relative flex-1 max-w-md">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -145,7 +142,6 @@ const Customers = () => {
                 </div>
             </div>
 
-            {/* Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -195,16 +191,9 @@ const Customers = () => {
                 </div>
             </div>
 
-            {/* ✅ FIXED MODAL */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    {/* Backdrop */}
-                    <div
-                        className="absolute inset-0 bg-gray-500 bg-opacity-75"
-                        onClick={handleCloseModal}
-                    />
-
-                    {/* Modal Box */}
+                    <div className="absolute inset-0 bg-gray-500 bg-opacity-75" onClick={handleCloseModal} />
                     <div className="relative bg-white rounded-lg text-left shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto z-10">
                         <form onSubmit={handleSubmit} className="w-full">
                             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -212,105 +201,46 @@ const Customers = () => {
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
                                         {editingId ? 'Edit Customer' : 'Add New Customer'}
                                     </h3>
-                                    <button
-                                        type="button"
-                                        onClick={handleCloseModal}
-                                        className="text-gray-400 hover:text-gray-500"
-                                    >
+                                    <button type="button" onClick={handleCloseModal} className="text-gray-400 hover:text-gray-500">
                                         <FiX className="h-6 w-6" />
                                     </button>
                                 </div>
-
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Full Name *</label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="text" name="name" required value={formData.name} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Phone Number *</label>
-                                        <input
-                                            type="text"
-                                            name="phone"
-                                            required
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="text" name="phone" required value={formData.phone} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Email Address</label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="email" name="email" value={formData.email} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">GSTIN / VAT Number</label>
-                                        <input
-                                            type="text"
-                                            name="gstNumber"
-                                            value={formData.gstNumber}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 uppercase focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="text" name="gstNumber" value={formData.gstNumber} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 uppercase focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div className="sm:col-span-2">
                                         <label className="block text-sm font-medium text-gray-700">Address</label>
-                                        <textarea
-                                            name="address"
-                                            rows="2"
-                                            value={formData.address}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <textarea name="address" rows="2" value={formData.address} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Credit Limit (₹)</label>
-                                        <input
-                                            type="number"
-                                            name="creditLimit"
-                                            min="0"
-                                            value={formData.creditLimit}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="number" name="creditLimit" min="0" value={formData.creditLimit} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div className="sm:col-span-2">
                                         <label className="block text-sm font-medium text-gray-700">Notes / Remarks</label>
-                                        <input
-                                            type="text"
-                                            name="notes"
-                                            value={formData.notes}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Modal Footer */}
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={handleCloseModal}
-                                    className="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                >
+                                <button type="button" onClick={handleCloseModal} className="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
                                     Cancel
                                 </button>
-                                <button
-                                    type="submit"
-                                    className="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                >
+                                <button type="submit" className="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700">
                                     {editingId ? 'Update Customer' : 'Add Customer'}
                                 </button>
                             </div>
