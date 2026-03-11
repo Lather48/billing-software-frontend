@@ -6,6 +6,8 @@ import { FiPrinter, FiArrowLeft, FiDownload } from 'react-icons/fi';
 import { format } from 'date-fns';
 import { BusinessContext } from '../context/BusinessContext';
 
+const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+
 const BillPreview = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -17,7 +19,7 @@ const BillPreview = () => {
     useEffect(() => {
         const fetchBill = async () => {
             try {
-                const res = await axios.get(`https://billing-software-backend-production-0456.up.railway.app/api/bills/${id}`);
+                const res = await axios.get(`${API}/api/bills/${id}`);
                 setBill(res.data);
             } catch (err) {
                 toast.error('Failed to load bill details');
@@ -38,41 +40,27 @@ const BillPreview = () => {
 
     return (
         <div className="max-w-4xl mx-auto pb-12 print:p-0">
-            {/* Actions Header */}
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100 print:hidden">
-                <button
-                    onClick={() => navigate('/bills')}
-                    className="text-gray-600 hover:text-primary flex items-center mb-4 sm:mb-0 transition font-medium"
-                >
+                <button onClick={() => navigate('/bills')} className="text-gray-600 hover:text-primary flex items-center mb-4 sm:mb-0 transition font-medium">
                     <FiArrowLeft className="mr-2" /> Back to Bills
                 </button>
                 <div className="flex space-x-3">
-                    <button
-                        onClick={handlePrint}
-                        className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center"
-                    >
+                    <button onClick={handlePrint} className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center">
                         <FiDownload className="mr-2" /> Save PDF
                     </button>
-                    <button
-                        onClick={handlePrint}
-                        className="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center shadow-sm"
-                    >
+                    <button onClick={handlePrint} className="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center shadow-sm">
                         <FiPrinter className="mr-2" /> Print Invoice
                     </button>
                 </div>
             </div>
 
-            {/* Printable Invoice Area */}
             <div className="bg-white shadow-2xl overflow-hidden print:shadow-none min-h-[1056px] relative text-gray-800 font-sans">
-                {/* Background decorative shapes */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-bl-full z-0 opacity-70"></div>
                 {bill.status === 'paid' && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-45 text-[8rem] text-green-500/10 font-black whitespace-nowrap z-0 pointer-events-none uppercase tracking-widest">PAID IN FULL</div>}
 
-                {/* Rich Header */}
                 <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white px-8 sm:px-12 py-10 relative overflow-hidden shadow-md">
                     <div className="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20"></div>
                     <div className="absolute right-20 bottom-0 w-32 h-32 bg-white opacity-10 rounded-full -mb-10"></div>
-
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center relative z-10 w-full mb-4">
                         <div className="flex items-center gap-6 mb-6 sm:mb-0">
                             {business?.logo && (
@@ -97,7 +85,6 @@ const BillPreview = () => {
                 </div>
 
                 <div className="px-8 sm:px-12 py-10 relative z-10">
-                    {/* Essential Meta Info Row */}
                     <div className="flex flex-col sm:flex-row justify-between items-start mb-10 pb-8 border-b border-gray-100">
                         <div className="w-full sm:w-1/2 pr-0 sm:pr-4 mb-6 sm:mb-0">
                             <h3 className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-3">Invoice To</h3>
@@ -129,7 +116,6 @@ const BillPreview = () => {
                         </div>
                     </div>
 
-                    {/* Items Table */}
                     <div className="mb-8 rounded-xl overflow-x-auto overflow-y-hidden border border-gray-200 shadow-sm">
                         <table className="w-full text-left border-collapse min-w-[600px]">
                             <thead>
@@ -160,9 +146,7 @@ const BillPreview = () => {
                         </table>
                     </div>
 
-                    {/* Payment & Totals Section */}
                     <div className="flex flex-col sm:flex-row justify-between items-start pt-4 gap-8">
-                        {/* Left Side: Bank Details & Notes */}
                         <div className="w-full sm:w-1/2 flex flex-col gap-6">
                             {business?.bankDetails?.accountNumber ? (
                                 <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-5">
@@ -184,7 +168,6 @@ const BillPreview = () => {
                                     <p className="text-lg font-bold text-blue-800">{business.upiId}</p>
                                 </div>
                             )}
-
                             <div className="pt-2">
                                 <h4 className="font-bold text-gray-400 text-xs mb-2 tracking-widest uppercase">Terms & Conditions</h4>
                                 <div className="text-[11px] text-gray-500 leading-relaxed whitespace-pre-line bg-gray-50 p-4 rounded-xl border border-gray-100">
@@ -193,46 +176,21 @@ const BillPreview = () => {
                             </div>
                         </div>
 
-                        {/* Right Side: Totals */}
                         <div className="w-full sm:w-1/2">
                             <div className="bg-gray-50/80 rounded-2xl p-6 border border-gray-100 shadow-sm">
                                 <div className="space-y-3">
-                                    <div className="flex justify-between text-sm items-center">
-                                        <span className="text-gray-500 font-medium">Subtotal</span>
-                                        <span className="font-bold text-gray-900">₹{bill.subtotal?.toFixed(2) || '0.00'}</span>
-                                    </div>
-                                    {bill.totalDiscount > 0 && (
-                                        <div className="flex justify-between text-sm items-center">
-                                            <span className="text-gray-500 font-medium">Discount</span>
-                                            <span className="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">- ₹{bill.totalDiscount.toFixed(2)}</span>
-                                        </div>
-                                    )}
-                                    {bill.totalGST > 0 && (
-                                        <div className="flex justify-between text-sm items-center">
-                                            <span className="text-gray-500 font-medium">Tax & GST</span>
-                                            <span className="font-bold text-gray-900">+ ₹{bill.totalGST.toFixed(2)}</span>
-                                        </div>
-                                    )}
-
+                                    <div className="flex justify-between text-sm items-center"><span className="text-gray-500 font-medium">Subtotal</span><span className="font-bold text-gray-900">₹{bill.subtotal?.toFixed(2) || '0.00'}</span></div>
+                                    {bill.totalDiscount > 0 && <div className="flex justify-between text-sm items-center"><span className="text-gray-500 font-medium">Discount</span><span className="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">- ₹{bill.totalDiscount.toFixed(2)}</span></div>}
+                                    {bill.totalGST > 0 && <div className="flex justify-between text-sm items-center"><span className="text-gray-500 font-medium">Tax & GST</span><span className="font-bold text-gray-900">+ ₹{bill.totalGST.toFixed(2)}</span></div>}
                                     <div className="my-4 border-t-2 border-dashed border-gray-200"></div>
-
                                     <div className="flex justify-between items-center bg-blue-600 rounded-xl p-4 shadow-md mt-4 transform sm:scale-105 transition-transform origin-right">
                                         <span className="font-bold text-blue-100 uppercase tracking-wider text-sm">Total Due</span>
                                         <span className="font-black text-white text-2xl tracking-tight">₹{bill.grandTotal?.toLocaleString('en-IN') || '0'}</span>
                                     </div>
-
                                     {bill.amountPaid > 0 && (
                                         <>
-                                            <div className="flex justify-between text-sm items-center mt-6 pt-4 border-t border-gray-200">
-                                                <span className="text-gray-500 font-medium">Amount Received</span>
-                                                <span className="font-bold text-gray-900">₹{bill.amountPaid.toLocaleString('en-IN')}</span>
-                                            </div>
-                                            <div className="flex justify-between text-sm items-center mt-2">
-                                                <span className="text-gray-500 font-medium">Balance</span>
-                                                <span className={`font-bold ${bill.balanceDue > 0 ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'} px-2 py-0.5 rounded`}>
-                                                    ₹{bill.balanceDue > 0 ? bill.balanceDue.toLocaleString('en-IN') : '0'}
-                                                </span>
-                                            </div>
+                                            <div className="flex justify-between text-sm items-center mt-6 pt-4 border-t border-gray-200"><span className="text-gray-500 font-medium">Amount Received</span><span className="font-bold text-gray-900">₹{bill.amountPaid.toLocaleString('en-IN')}</span></div>
+                                            <div className="flex justify-between text-sm items-center mt-2"><span className="text-gray-500 font-medium">Balance</span><span className={`font-bold ${bill.balanceDue > 0 ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'} px-2 py-0.5 rounded`}>₹{bill.balanceDue > 0 ? bill.balanceDue.toLocaleString('en-IN') : '0'}</span></div>
                                         </>
                                     )}
                                 </div>
@@ -240,7 +198,6 @@ const BillPreview = () => {
                         </div>
                     </div>
 
-                    {/* Decorative Footer */}
                     <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col items-center pb-8">
                         <div className="flex items-center gap-3 text-gray-400 mb-2">
                             <div className="w-12 h-px bg-gray-200"></div>
