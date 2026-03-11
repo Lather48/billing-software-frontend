@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import { FiSave, FiUpload, FiSmartphone, FiRefreshCw } from 'react-icons/fi';
 import { QRCodeSVG } from 'qrcode.react';
 
+axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
+
 const Settings = () => {
     const { user } = useContext(AuthContext);
     const { business, setBusiness } = useContext(BusinessContext);
@@ -80,7 +82,10 @@ const Settings = () => {
             const fetchStatus = async () => {
                 try {
                     const res = await axios.get('https://bilabiate-sharyl-noncriminally.ngrok-free.dev/api/business/whatsapp-status', {
-                        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                            'ngrok-skip-browser-warning': 'true'
+                        }
                     });
                     setWhatsappStatus(res.data.status);
                     setWhatsappQR(res.data.qrCode);
@@ -89,7 +94,7 @@ const Settings = () => {
                 }
             };
             fetchStatus();
-            interval = setInterval(fetchStatus, 30000);
+            interval = setInterval(fetchStatus, 10000);
         }
         return () => clearInterval(interval);
     }, [activeTab, whatsappStatus]);
