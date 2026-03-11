@@ -1,5 +1,8 @@
 import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+
+axios.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
