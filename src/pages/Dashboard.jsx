@@ -8,7 +8,8 @@ import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { BusinessContext } from '../context/BusinessContext';
 
-// Dummy data for chart if api fails or is empty
+const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+
 const data = [
     { name: 'Mon', sales: 4000 },
     { name: 'Tue', sales: 3000 },
@@ -56,7 +57,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchDashboardStats = async () => {
             try {
-                const res = await axios.get('https://billing-software-backend-production-0456.up.railway.app/api/reports/dashboard');
+                const res = await axios.get(`${API}/api/reports/dashboard`);
                 setStats(res.data);
             } catch (error) {
                 console.error('Error fetching dashboard stats', error);
@@ -82,46 +83,14 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard
-                    title="Today's Sales"
-                    value={`₹${stats.todaySales.toLocaleString('en-IN')}`}
-                    subtext="Revenue generated today"
-                    icon={FiDollarSign}
-                    colorClass="bg-blue-500"
-                />
-                <StatCard
-                    title="Bills Created"
-                    value={stats.todayBillsCount}
-                    subtext={`${stats.pendingBills} pending payment`}
-                    icon={FiFileText}
-                    colorClass="bg-emerald-500"
-                    link="/bills"
-                    linkText="View all"
-                />
-                <StatCard
-                    title="Low Stock Items"
-                    value={stats.lowStockCount}
-                    subtext="Needs attention"
-                    icon={FiAlertTriangle}
-                    colorClass="bg-amber-500"
-                    link="/inventory"
-                    linkText="Restock"
-                />
-                <StatCard
-                    title="Total Customers"
-                    value={stats.totalCustomers}
-                    subtext="Registered clients"
-                    icon={FiUsers}
-                    colorClass="bg-purple-500"
-                    link="/customers"
-                    linkText="View"
-                />
+                <StatCard title="Today's Sales" value={`₹${stats.todaySales.toLocaleString('en-IN')}`} subtext="Revenue generated today" icon={FiDollarSign} colorClass="bg-blue-500" />
+                <StatCard title="Bills Created" value={stats.todayBillsCount} subtext={`${stats.pendingBills} pending payment`} icon={FiFileText} colorClass="bg-emerald-500" link="/bills" linkText="View all" />
+                <StatCard title="Low Stock Items" value={stats.lowStockCount} subtext="Needs attention" icon={FiAlertTriangle} colorClass="bg-amber-500" link="/inventory" linkText="Restock" />
+                <StatCard title="Total Customers" value={stats.totalCustomers} subtext="Registered clients" icon={FiUsers} colorClass="bg-purple-500" link="/customers" linkText="View" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Chart Section */}
                 <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-gray-800">Sales Overview</h3>
@@ -142,17 +111,13 @@ const Dashboard = () => {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 12 }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 12 }} tickFormatter={(value) => `₹${value}`} />
-                                <Tooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                                    formatter={(value) => [`₹${value}`, 'Sales']}
-                                />
+                                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} formatter={(value) => [`₹${value}`, 'Sales']} />
                                 <Area type="monotone" dataKey="sales" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Recent Bills Section */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-gray-800">Recent Bills</h3>
@@ -171,10 +136,10 @@ const Dashboard = () => {
                                     <div className="text-right">
                                         <p className="text-sm font-bold text-gray-800">₹{bill.grandTotal.toLocaleString('en-IN')}</p>
                                         <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-medium capitalize
-                      ${bill.status === 'paid' ? 'bg-green-100 text-green-800' : ''}
-                      ${bill.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
-                      ${bill.status === 'cancelled' ? 'bg-red-100 text-red-800' : ''}
-                    `}>
+                                            ${bill.status === 'paid' ? 'bg-green-100 text-green-800' : ''}
+                                            ${bill.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+                                            ${bill.status === 'cancelled' ? 'bg-red-100 text-red-800' : ''}
+                                        `}>
                                             {bill.status}
                                         </span>
                                     </div>
