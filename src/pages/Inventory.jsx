@@ -3,12 +3,13 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiSearch } from 'react-icons/fi';
 
+const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+
 const Inventory = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const Inventory = () => {
 
     const fetchProducts = async () => {
         try {
-            const res = await axios.get('https://billing-software-backend-production-0456.up.railway.app/api/products');
+            const res = await axios.get(`${API}/api/products`);
             setProducts(res.data);
         } catch (err) {
             toast.error('Failed to load products');
@@ -38,7 +39,6 @@ const Inventory = () => {
         fetchProducts();
     }, []);
 
-    // ✅ FIX: Body scroll lock jab modal open ho
     useEffect(() => {
         if (isModalOpen) {
             document.body.style.overflow = 'hidden';
@@ -80,7 +80,6 @@ const Inventory = () => {
     };
 
     const handleChange = (e) => {
-        // ✅ FIX: Empty string handle karo number fields mein
         const value = e.target.type === 'number'
             ? (e.target.value === '' ? '' : Number(e.target.value))
             : e.target.value;
@@ -91,10 +90,10 @@ const Inventory = () => {
         e.preventDefault();
         try {
             if (editingId) {
-                await axios.put(`https://billing-software-backend-production-0456.up.railway.app/api/products/${editingId}`, formData);
+                await axios.put(`${API}/api/products/${editingId}`, formData);
                 toast.success('Product updated successfully');
             } else {
-                await axios.post('https://billing-software-backend-production-0456.up.railway.app/api/products', formData);
+                await axios.post(`${API}/api/products`, formData);
                 toast.success('Product added successfully');
             }
             handleCloseModal();
@@ -107,7 +106,7 @@ const Inventory = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
-                await axios.delete(`https://billing-software-backend-production-0456.up.railway.app/api/products/${id}`);
+                await axios.delete(`${API}/api/products/${id}`);
                 toast.success('Product deleted');
                 fetchProducts();
             } catch (err) {
@@ -124,7 +123,6 @@ const Inventory = () => {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 className="text-2xl font-bold text-gray-800">Inventory Management</h2>
                 <button
@@ -135,7 +133,6 @@ const Inventory = () => {
                 </button>
             </div>
 
-            {/* Filters */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center">
                 <div className="relative flex-1 max-w-md">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -151,7 +148,6 @@ const Inventory = () => {
                 </div>
             </div>
 
-            {/* Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -203,16 +199,12 @@ const Inventory = () => {
                 </div>
             </div>
 
-            {/* ✅ FIXED MODAL */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    {/* Backdrop */}
                     <div
                         className="absolute inset-0 bg-gray-500 bg-opacity-75"
                         onClick={handleCloseModal}
                     />
-
-                    {/* Modal Box - z-10 so it stays above backdrop */}
                     <div className="relative bg-white rounded-lg text-left shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto z-10">
                         <form onSubmit={handleSubmit} className="w-full">
                             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -232,44 +224,19 @@ const Inventory = () => {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Product Name *</label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="text" name="name" required value={formData.name} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Product Code / SKU *</label>
-                                        <input
-                                            type="text"
-                                            name="code"
-                                            required
-                                            value={formData.code}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="text" name="code" required value={formData.code} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Category</label>
-                                        <input
-                                            type="text"
-                                            name="category"
-                                            value={formData.category}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="text" name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Unit</label>
-                                        <select
-                                            name="unit"
-                                            value={formData.unit}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        >
+                                        <select name="unit" value={formData.unit} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                             <option value="pcs">Pieces (pcs)</option>
                                             <option value="kg">Kilograms (kg)</option>
                                             <option value="litre">Litres (L)</option>
@@ -279,37 +246,15 @@ const Inventory = () => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Purchase Price</label>
-                                        <input
-                                            type="number"
-                                            name="purchasePrice"
-                                            min="0"
-                                            step="0.01"
-                                            value={formData.purchasePrice}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="number" name="purchasePrice" min="0" step="0.01" value={formData.purchasePrice} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Selling Price *</label>
-                                        <input
-                                            type="number"
-                                            name="sellingPrice"
-                                            min="0"
-                                            step="0.01"
-                                            required
-                                            value={formData.sellingPrice}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="number" name="sellingPrice" min="0" step="0.01" required value={formData.sellingPrice} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">GST Rate (%)</label>
-                                        <select
-                                            name="gstRate"
-                                            value={formData.gstRate}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        >
+                                        <select name="gstRate" value={formData.gstRate} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                             <option value="0">0%</option>
                                             <option value="5">5%</option>
                                             <option value="12">12%</option>
@@ -319,42 +264,19 @@ const Inventory = () => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Current Stock</label>
-                                        <input
-                                            type="number"
-                                            name="stock"
-                                            min="0"
-                                            value={formData.stock}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="number" name="stock" min="0" value={formData.stock} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Min Stock Alert Level</label>
-                                        <input
-                                            type="number"
-                                            name="minStockAlert"
-                                            min="0"
-                                            value={formData.minStockAlert}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                        />
+                                        <input type="number" name="minStockAlert" min="0" value={formData.minStockAlert} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Modal Footer Buttons */}
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={handleCloseModal}
-                                    className="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                >
+                                <button type="button" onClick={handleCloseModal} className="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
                                     Cancel
                                 </button>
-                                <button
-                                    type="submit"
-                                    className="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                >
+                                <button type="submit" className="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700">
                                     {editingId ? 'Update Product' : 'Add Product'}
                                 </button>
                             </div>
