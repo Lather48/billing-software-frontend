@@ -6,7 +6,7 @@ import { FiPrinter, FiArrowLeft, FiDownload } from 'react-icons/fi';
 import { format } from 'date-fns';
 import { BusinessContext } from '../context/BusinessContext';
 
-const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+const API = 'https://server.robinlather.in';
 
 const BillPreview = () => {
     const { id } = useParams();

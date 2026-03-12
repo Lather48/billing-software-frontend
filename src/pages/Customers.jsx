@@ -3,7 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiSearch, FiPhone, FiMail } from 'react-icons/fi';
 
-const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+const API = 'https://server.robinlather.in';
 
 const Customers = () => {
     const [customers, setCustomers] = useState([]);

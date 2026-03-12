@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { BusinessContext } from '../context/BusinessContext';
 
-const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+const API = 'https://server.robinlather.in';
 
 const data = [
     { name: 'Mon', sales: 4000 },

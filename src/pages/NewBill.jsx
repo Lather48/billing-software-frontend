@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { FiPlus, FiTrash2, FiSave, FiPrinter } from 'react-icons/fi';
 import { BusinessContext } from '../context/BusinessContext';
 
-const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+const API = 'https://server.robinlather.in';
 
 const NewBill = () => {
     const navigate = useNavigate();

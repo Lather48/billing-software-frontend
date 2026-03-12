@@ -14,7 +14,7 @@ export const BusinessProvider = ({ children }) => {
         const fetchBusiness = async () => {
             if (user) {
                 try {
-                    const res = await axios.get('https://bilabiate-sharyl-noncriminally.ngrok-free.dev/api/auth/me');
+                    const res = await axios.get('https://server.robinlather.in/api/auth/me');
                     setBusiness(res.data.business);
                 } catch (err) {
                     console.error("Failed to load business profile");

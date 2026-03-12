@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { FiEye, FiPrinter, FiTrash2, FiSearch, FiFilter } from 'react-icons/fi';
 import { format } from 'date-fns';
 
-const API = 'https://bilabiate-sharyl-noncriminally.ngrok-free.dev';
+const API = 'https://server.robinlather.in';
 
 const BillsList = () => {
     const [bills, setBills] = useState([]);

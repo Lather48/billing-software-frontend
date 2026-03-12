@@ -81,7 +81,7 @@ const Settings = () => {
         if (activeTab === 'whatsapp' && whatsappStatus !== 'connected') {
             const fetchStatus = async () => {
                 try {
-                    const res = await axios.get('https://bilabiate-sharyl-noncriminally.ngrok-free.dev/api/business/whatsapp-status', {
+                    const res = await axios.get('https://server.robinlather.in/api/business/whatsapp-status', {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`,
                             'ngrok-skip-browser-warning': 'true'
@@ -143,7 +143,7 @@ const Settings = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await axios.put('https://bilabiate-sharyl-noncriminally.ngrok-free.dev/api/business', formData);
+            const res = await axios.put('https://server.robinlather.in/api/business', formData);
             setBusiness(res.data);
             toast.success('Business settings updated successfully!');
         } catch (err) {
