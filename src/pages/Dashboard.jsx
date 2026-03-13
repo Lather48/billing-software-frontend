@@ -2,23 +2,12 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import {
     FiDollarSign, FiFileText, FiAlertTriangle, FiUsers,
-    FiEye, FiPrinter, FiMessageCircle
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { BusinessContext } from '../context/BusinessContext';
 
 const API = 'https://server.robinlather.in';
-
-const data = [
-    { name: 'Mon', sales: 4000 },
-    { name: 'Tue', sales: 3000 },
-    { name: 'Wed', sales: 2000 },
-    { name: 'Thu', sales: 2780 },
-    { name: 'Fri', sales: 1890 },
-    { name: 'Sat', sales: 2390 },
-    { name: 'Sun', sales: 3490 },
-];
 
 const StatCard = ({ title, value, subtext, icon: Icon, colorClass, link, linkText }) => (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col">
@@ -49,23 +38,28 @@ const Dashboard = () => {
         pendingBills: 0,
         lowStockCount: 0,
         totalCustomers: 0,
-        recentBills: []
+        recentBills: [],
+        weeklyData: []
     });
     const [loading, setLoading] = useState(true);
     const { business } = useContext(BusinessContext);
 
+    const fetchDashboardStats = async () => {
+        try {
+            const res = await axios.get(`${API}/api/reports/dashboard`);
+            setStats(res.data);
+        } catch (error) {
+            console.error('Error fetching dashboard stats', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchDashboardStats = async () => {
-            try {
-                const res = await axios.get(`${API}/api/reports/dashboard`);
-                setStats(res.data);
-            } catch (error) {
-                console.error('Error fetching dashboard stats', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchDashboardStats();
+        // Har 30 second mein refresh
+        const interval = setInterval(fetchDashboardStats, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     if (loading) {
@@ -94,14 +88,11 @@ const Dashboard = () => {
                 <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-gray-800">Sales Overview</h3>
-                        <select className="border border-gray-300 rounded text-sm px-2 py-1 outline-none">
-                            <option>Last 7 Days</option>
-                            <option>This Month</option>
-                        </select>
+                        <span className="text-xs text-gray-400">Last 7 Days</span>
                     </div>
                     <div className="h-72">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <AreaChart data={stats.weeklyData || []} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#2563EB" stopOpacity={0.3} />
