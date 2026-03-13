@@ -42,9 +42,7 @@ const Reports = () => {
             const customers = customersRes.data;
             const bills = billsRes.data.filter(b => b.status !== 'cancelled');
 
-            // Phone number se match karke outstanding calculate karo
             const enriched = customers.map(customer => {
-                // Bills jo is customer ke phone se match karte hain
                 const customerBills = bills.filter(bill => {
                     if (bill.customer?._id === customer._id) return true;
                     if (bill.customerPhone && customer.phone &&
@@ -65,7 +63,6 @@ const Reports = () => {
                 };
             });
 
-            // Outstanding ke hisaab se sort karo
             const sorted = enriched.sort((a, b) => b.outstanding - a.outstanding);
             setCustomersData(sorted);
         } catch (err) {
@@ -97,7 +94,7 @@ const Reports = () => {
         } else if (activeTab === 'stock') {
             fetchProductsData();
         }
-    }, [activeTab]);
+    }, [activeTab, dateRange]);
 
     const chartData = salesData?.bills ? salesData.bills.map(b => ({
         name: format(new Date(b.billDate), 'dd MMM'),
@@ -159,11 +156,11 @@ const Reports = () => {
                     <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-end gap-4 flex-wrap">
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">From Date</label>
-                            <input type="date" value={dateRange.start} onChange={e => setDateRange({ ...dateRange, start: e.target.value })} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary" />
+                            <input type="date" value={dateRange.start} onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary" />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">To Date</label>
-                            <input type="date" value={dateRange.end} onChange={e => setDateRange({ ...dateRange, end: e.target.value })} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary" />
+                            <input type="date" value={dateRange.end} onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary" />
                         </div>
                         <button onClick={fetchSalesData} className="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                             Apply Filter
@@ -219,7 +216,6 @@ const Reports = () => {
                                 </div>
                             </div>
 
-                            {/* Bills Table */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="p-4 border-b border-gray-100 bg-gray-50">
                                     <h3 className="font-semibold text-gray-800">Bills List</h3>
@@ -277,11 +273,11 @@ const Reports = () => {
                     <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-end gap-4 flex-wrap">
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">From Date</label>
-                            <input type="date" value={dateRange.start} onChange={e => setDateRange({ ...dateRange, start: e.target.value })} className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                            <input type="date" value={dateRange.start} onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))} className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-gray-500 mb-1">To Date</label>
-                            <input type="date" value={dateRange.end} onChange={e => setDateRange({ ...dateRange, end: e.target.value })} className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                            <input type="date" value={dateRange.end} onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))} className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
                         </div>
                         <button onClick={fetchSalesData} className="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                             Apply Filter
