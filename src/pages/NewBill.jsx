@@ -113,7 +113,7 @@ const NewBill = () => {
     const paidVal = Number(amountPaid) || 0;
     const balanceDue = totals.grandTotal - paidVal;
 
-    const handleSaveBill = async (action = 'save', skipPaymentCheck = false) => {
+    const handleSaveBill = async (action = 'save', skipPaymentCheck = false, forcedAmountPaid = null) => {
         if (items.length === 0) return toast.error('Please add at least one item');
 
         let customerData = {};
@@ -132,6 +132,9 @@ const NewBill = () => {
             return;
         }
 
+        const finalAmountPaid = forcedAmountPaid !== null ? forcedAmountPaid : paidVal;
+        const finalBalanceDue = totals.grandTotal - finalAmountPaid;
+
         const billData = {
             ...customerData,
             items: totals.enrichedItems,
@@ -143,9 +146,9 @@ const NewBill = () => {
             sgst: totals.sgst,
             grandTotal: totals.grandTotal,
             paymentMode,
-            amountPaid: paidVal,
-            balanceDue: balanceDue,
-            status: balanceDue <= 0 ? 'paid' : (paidVal > 0 ? 'partial' : 'pending'),
+            amountPaid: finalAmountPaid,
+            balanceDue: finalBalanceDue,
+            status: finalBalanceDue <= 0 ? 'paid' : (finalAmountPaid > 0 ? 'partial' : 'pending'),
             notes,
             billDate,
             dueDate
@@ -330,7 +333,12 @@ const NewBill = () => {
                             <div className="mt-3 text-lg font-bold text-primary">₹{(balanceDue > 0 ? balanceDue : totals.grandTotal).toLocaleString('en-IN')}</div>
                         </div>
                         <div className="space-y-3">
-                            <button onClick={() => { setShowPaymentModal(false); handleSaveBill(pendingAction, true); }} className="w-full bg-primary hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition shadow-md">
+                            <button
+                                onClick={() => {
+                                    setShowPaymentModal(false);
+                                    handleSaveBill(pendingAction, true, totals.grandTotal);
+                                }}
+                                className="w-full bg-primary hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition shadow-md">
                                 Payment Received & Save
                             </button>
                             <button onClick={() => setShowPaymentModal(false)} className="w-full bg-white hover:bg-gray-50 text-gray-600 border border-gray-300 font-medium py-2 px-4 rounded-lg transition">
