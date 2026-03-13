@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiEye, FiTrash2, FiSearch, FiFilter, FiDollarSign, FiX } from 'react-icons/fi';
+import { FiEye, FiTrash2, FiSearch, FiFilter, FiCheckCircle, FiX } from 'react-icons/fi';
 import { format } from 'date-fns';
 
 const API = 'https://server.robinlather.in';
@@ -14,7 +14,6 @@ const BillsList = () => {
     const [statusFilter, setStatusFilter] = useState('');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
-    // Payment Modal
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedBill, setSelectedBill] = useState(null);
     const [paymentAmount, setPaymentAmount] = useState('');
@@ -197,18 +196,24 @@ const BillsList = () => {
                                                 {bill.status}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center space-x-3">
-                                            <Link to={`/bills/preview/${bill._id}`} className="text-primary hover:text-blue-900" title="View/Print">
-                                                <FiEye className="inline h-5 w-5" />
-                                            </Link>
-                                            {(bill.status === 'pending' || bill.status === 'partial') && (
-                                                <button onClick={() => openPaymentModal(bill)} className="text-green-600 hover:text-green-800" title="Receive Payment">
-                                                    <FiDollarSign className="inline h-5 w-5" />
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                            <div className="flex items-center justify-center gap-3">
+                                                <Link to={`/bills/preview/${bill._id}`} className="text-primary hover:text-blue-900" title="View/Print">
+                                                    <FiEye className="h-5 w-5" />
+                                                </Link>
+                                                {(bill.status === 'pending' || bill.status === 'partial') && (
+                                                    <button
+                                                        onClick={() => openPaymentModal(bill)}
+                                                        title="Receive Payment"
+                                                        className="text-green-600 hover:text-green-800"
+                                                    >
+                                                        <FiCheckCircle className="h-5 w-5" />
+                                                    </button>
+                                                )}
+                                                <button onClick={() => handleDelete(bill._id)} className="text-red-500 hover:text-red-900" title="Delete Bill">
+                                                    <FiTrash2 className="h-5 w-5" />
                                                 </button>
-                                            )}
-                                            <button onClick={() => handleDelete(bill._id)} className="text-red-500 hover:text-red-900" title="Delete Bill">
-                                                <FiTrash2 className="inline h-5 w-5" />
-                                            </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -229,7 +234,7 @@ const BillsList = () => {
                             </button>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-1">
+                        <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-2">
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-500">Bill No:</span>
                                 <span className="font-medium text-gray-900">{selectedBill.billNumber}</span>
@@ -239,6 +244,10 @@ const BillsList = () => {
                                 <span className="font-medium text-gray-900">{selectedBill.customer?.name || selectedBill.customerName}</span>
                             </div>
                             <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Bill Date:</span>
+                                <span className="font-medium text-gray-900">{format(new Date(selectedBill.billDate), 'dd MMM yyyy')}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
                                 <span className="text-gray-500">Total Amount:</span>
                                 <span className="font-medium text-gray-900">₹{selectedBill.grandTotal.toLocaleString()}</span>
                             </div>
@@ -246,9 +255,9 @@ const BillsList = () => {
                                 <span className="text-gray-500">Already Paid:</span>
                                 <span className="font-medium text-green-600">₹{(selectedBill.amountPaid || 0).toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between text-sm border-t pt-1 mt-1">
-                                <span className="text-gray-700 font-medium">Balance Due:</span>
-                                <span className="font-bold text-red-600">₹{selectedBill.balanceDue.toLocaleString()}</span>
+                            <div className="flex justify-between text-sm border-t border-gray-200 pt-2 mt-1">
+                                <span className="text-gray-700 font-semibold">Balance Due:</span>
+                                <span className="font-bold text-red-600 text-base">₹{selectedBill.balanceDue.toLocaleString()}</span>
                             </div>
                         </div>
 
@@ -262,9 +271,15 @@ const BillsList = () => {
                                     max={selectedBill.balanceDue}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-medium focus:outline-none focus:ring-2 focus:ring-primary"
                                 />
+                                {Number(paymentAmount) > 0 && Number(paymentAmount) < selectedBill.balanceDue && (
+                                    <p className="text-xs text-amber-600 mt-1">Partial payment — remaining ₹{(selectedBill.balanceDue - Number(paymentAmount)).toLocaleString()} baaki rahega</p>
+                                )}
+                                {Number(paymentAmount) >= selectedBill.balanceDue && (
+                                    <p className="text-xs text-green-600 mt-1">✓ Full payment — bill paid ho jaayega</p>
+                                )}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Payment Mode</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {['cash', 'upi', 'card'].map(mode => (
                                         <button key={mode} type="button" onClick={() => setPaymentMode(mode)}
